@@ -1,0 +1,33 @@
+/** login page **/
+
+.bg-grey {
+	background-color: #d2d6de;
+}
+
+.height100vh {
+	height: 100vh;
+}
+
+.mt-20 {
+	margin-top: 20%;
+}
+
+.d-inline-block {
+	display: inline-block;
+}
+
+.float-l {
+	float: left;
+}
+
+.float-r {
+	float: right;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+	background: #17a2b8;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+	color :#fff;
+}
