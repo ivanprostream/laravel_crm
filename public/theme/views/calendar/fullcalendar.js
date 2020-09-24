@@ -36,12 +36,12 @@ $(function () {
 
 
     // show or hide events based on category
-    $(".bg-light-blue").on("click", function (e) {
+    $(".bg-pink").on("click", function (e) {
 
         $('.fc-event-container a.pending').toggle();
     });
 
-    $(".bg-yellow").on("click", function (e) {
+    $(".bg-blue").on("click", function (e) {
 
         $('.fc-event-container a.in-progress').toggle();
     });

@@ -166,11 +166,10 @@
                                     <tr>
                                         <th>Описание</th> <td>{!! $task->description !!}</td>
                                     </tr>
-                                    @if(\Auth::user()->is_admin == 1)
-                                        <tr><th> Создан </th><td>{{ $task->createdBy->name }}</td></tr>
-                                        <tr><th> Изменен </th><td>{{ isset($task->modifiedBy->name)?$task->modifiedBy->name:"" }}</td></tr>
+                                    <tr><th> Создан </th><td>{{ $task->createdBy->name }}</td></tr>
+                                    @if(isset($task->modifiedBy->name))
+                                    <tr><th> Изменен </th><td>{{ isset($task->modifiedBy->name)?$task->modifiedBy->name:"" }}</td></tr>
                                     @endif
-
                                     <tr><th> Исполнители </th>
                 
                                     <td>@foreach($selected_assigned_users as $user)

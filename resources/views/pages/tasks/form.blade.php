@@ -70,20 +70,45 @@
                          
                     </div>
                   
-                        <div class="col-md-12">
-                            <div class="form-group {{ $errors->has('assigned_users') ? 'has-error' : ''}}">
-                                <label for="assigned_users" class="control-label">{{ 'Исполнители' }}</label>
-                                <select name="assigned_users[]" id="assigned_users" class="form-control select2" multiple="multiple" data-placeholder="Выберите сотрудника(ов)" data-dropdown-css-class="select2-purple">
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ isset($selected_assigned_users) && in_array($user->id, $selected_assigned_users)?"selected":"" }}>{{ $user->name }}</option>
+                    <div class="col-md-12"><label for="assigned_users" class="control-label">{{ 'Исполнители' }}</label>
+                    <div class="card card-primary card-outline card-tabs">
+                        <div class="card-header p-0 pt-1 border-bottom-0">
+                            <ul class="nav nav-tabs" id="custom-tabs-assigned" role="tablist">
+                              <li class="nav-item">
+                                <a class="nav-link active" id="assigned_users-tab" data-toggle="pill" href="#custom-tabs-assigned_users" role="tab" aria-controls="custom-tabs-assigned_users" aria-selected="true">По пользователям</a>
+                              </li>
+                              <li class="nav-item">
+                                <a class="nav-link" id="assigned_divisions-tab" data-toggle="pill" href="#custom-tabs-assigned_divisions" role="tab" aria-controls="custom-tabs-assigned_divisions" aria-selected="false">По подразделениям</a>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="card-body">
+                            <div class="tab-content" id="custom-tabs-assignedContent">
+                              <div class="tab-pane fade active show" id="custom-tabs-assigned_users" role="tabpanel" aria-labelledby="assigned_users-tab">
+                                <div class="form-group {{ $errors->has('assigned_users') ? 'has-error' : ''}}">
+                    
+                                    <select name="assigned_users[]" id="assigned_users" class="form-control" multiple="multiple" data-placeholder="Выберите сотрудника(ов)" data-dropdown-css-class="select2-purple">
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}" {{ isset($selected_assigned_users) && in_array($user->id, $selected_assigned_users)?"selected":"" }}>{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                              </div>
+                              <div class="tab-pane fade" id="custom-tabs-assigned_divisions" role="tabpanel" aria-labelledby="assigned_divisions-tab">
+                                <div class="form-group {{ $errors->has('assigned_users') ? 'has-error' : ''}}">
+                                
+                                <select name="assigned_divisions[]" id="assigned_divisions" class="form-control" multiple="multiple" data-placeholder="Выберите подразделения" data-dropdown-css-class="select2-purple">
+                                    @foreach(getDivisions() as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
                                     @endforeach
                                 </select>
-                         
-                                {!! $errors->first('assigned_users', '<p class="text-danger">:message</p>') !!}
                             </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- /.card -->
                         </div>
-                 
-
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,7 +135,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label for="documents" class="control-label">{{ 'Документы' }} <i class="fa fa-link"></i></label>
-                            <select name="documents[]" multiple="multiple" data-placeholder="Выберите сотрудника(ов)" data-dropdown-css-class="select2-purple" class="form-control">
+                            <select id="documents" name="documents[]" multiple="multiple" data-placeholder="Выберите документы" data-dropdown-css-class="select2-purple" class="form-control">
                                 @foreach($documents as $document)
                                     <option value="{{ $document->id }}" {{ isset($selected_documents) && in_array($document->id, $selected_documents)?"selected":"" }}>{{ $document->name }}</option>
                                 @endforeach

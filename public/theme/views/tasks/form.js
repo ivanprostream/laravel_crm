@@ -5,7 +5,8 @@
 $(function () {
 
     $("#documents").select2();
-    $('.select2').select2();
+    $('#assigned_users').select2();
+    $('#assigned_divisions').select2();
 
     $('.textarea').summernote({
         height: 200,
@@ -25,6 +26,14 @@ $(function () {
         dayNamesShort: [ "вск","пнд","втр","срд","чтв","птн","сбт" ],
         dayNamesMin: [ "Вс","Пн","Вт","Ср","Чт","Пт","Сб" ],
         weekHeader: "Нед",
+    });
+
+    $("#custom-tabs-assigned").on("click", "#assigned_users-tab", function(){
+        $("select#assigned_divisions").val(null).trigger('change');
+    });
+
+    $("#custom-tabs-assigned").on("click", "#assigned_divisions-tab", function(){
+        $("select#assigned_users").val(null).trigger('change');
     });
 
 });

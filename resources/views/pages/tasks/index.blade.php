@@ -37,7 +37,7 @@
                     </form>
 
                     @if(user_can('create_task'))
-                        <a href="{{ url('/admin/tasks/create') }}" class="btn btn-success pull-right float-r" title="Add New user">
+                        <a href="{{ url('/admin/tasks/create') }}" class="btn btn-success pull-right float-r" title="Добавить">
                             <i class="fa fa-plus" aria-hidden="true"></i> Добавить
                         </a>
                     @endif
@@ -75,6 +75,7 @@
                                             @endif
                                             <th>Исполнители</th>
                                             <th>Дата создания</th>
+                                            <th>Начало / Конец</th>
                                             <th></th>
                                         </tr>
                                         </thead>
@@ -86,8 +87,8 @@
                                                     <td>{{ $item->id }}</td>
                                                 @endif
                                                 <td>{{ $item->name }}</td>
-                                                <td>{{ $item->priority }}</td>
-                                                <td>{{ $item->getStatus->name }}</td>
+                                                <td>{!! getStylePriority($item->priority) !!}</td>
+                                                <td>{!! getStyleStatus($item->status) !!}</td>
                                                 @if(\Auth::user()->is_admin == 1)
                                                     <td>{{ $item->createdBy->name }}</td>
                                                 @endif
@@ -97,6 +98,11 @@
                                                     @endforeach
                                                 </td>
                                                 <td>{{ $item->created_at }}</td>
+                                                <td>
+                                                    @if( empty($item->start_date) && empty($item->end_date))
+                                                        Бессрочно
+                                                    @endif
+                                                    {{ getNormalizeDate($item->start_date) }}<br>{{ getNormalizeDate($item->end_date) }}</td>
                                                 <td>
                                                     @if(user_can('view_task'))
                                                         <a href="{{ url('/admin/tasks/' . $item->id) }}" title="Просмотр"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Просмотр</button></a>

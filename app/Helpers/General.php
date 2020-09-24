@@ -1,7 +1,7 @@
 <?php
  
 use App\Models\Setting;
- 
+use App\Models\Task;
 /**
  * upload file
  *
@@ -121,24 +121,6 @@ function getUnreadMessages()
 }
 
 /**
- * getContacts
- *
- *
- * @param null $status
- * @return \Illuminate\Database\Eloquent\Collection|static[]
- */
-function getContacts($status = null)
-{
-    if(!$status)
-        return \App\Models\Contact::all();
- 
-    return \App\Models\Contact::join('contact_status', 'contact_status.id', '=', 'contact.status')
-        ->where('contact_status.name', $status)
-        ->get();
- 
-}
-
-/**
  * getDivisions
  *
  *
@@ -222,6 +204,88 @@ function getMailBoxTypeName($name)
     }elseif($name== 'Trash'){
         return 'Удаленные';
     }
+}
+
+
+/**
+ * get Tasks by Last Day
+ *
+ *
+ * @return mixed
+ */
+function getTasksByLastDay()
+{
+    $taskStatus = 1; // status In Work
+    $user  = Auth::user()->id;
+    $today = date('m/d/Y');
+
+    $tasks = DB::table('task_assigned')
+    ->select('task_assigned.user_id','task_assigned.task_id', 'task.*', 'task_status.name AS status_name', 'task_type.name AS type_name', 'users.name AS user_name')
+    ->join('task','task.id','=','task_assigned.task_id')
+    ->join('task_status','task_status.id','=','task.status')
+    ->join('task_type','task_type.id','=','task.type_id')
+    ->join('users','users.id','=','task.created_by_id')
+    ->where('task_assigned.user_id', $user)
+    ->where('task.status', $taskStatus)
+    ->where('end_date', '<=', date("m/d/Y"))
+    ->get();
+
+    return $tasks;
+}
+
+
+/**
+ * get Normalize date
+ *
+ *
+ * @return mixed
+ */
+function getNormalizeDate($date)
+{   if(isset($date) && !empty($date)){
+        $oldDate = explode("/", $date);
+        return $oldDate[1].'-'.$oldDate[0].'-'.$oldDate[2];
+    }else{
+        return $date;
+    }
+    
+}
+
+/**
+ * get Style Priority
+ *
+ *
+ * @return mixed
+ */
+function getStylePriority($priority)
+{   
+    if($priority == 'Низкий'){
+        return '<p class="text-success">Низкий</p>';
+    }elseif($priority == 'Нормальный'){
+        return '<p class="text-info">Нормальный</p>';
+    }elseif($priority == 'Высокий'){
+        return '<p class="text-danger">Высокий</p>';
+    }
+}
+
+/**
+ * get Style Priority
+ *
+ *
+ * @return mixed
+ */
+function getStyleStatus($status)
+{   
+    if(1 == $status){
+        return '<span class="badge bg-success">В работе</span>';
+    }elseif(2 == $status){
+        return '<span class="badge bg-warning">Архив</span>';
+    }elseif(3 == $status){
+        return '<span class="badge bg-danger">Отменен</span>';
+    }elseif(4 == $status){
+        return '<span class="badge bg-primary">Завершен</span>';
+    }
+
+    
 }
 
 

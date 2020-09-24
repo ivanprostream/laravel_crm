@@ -58,63 +58,62 @@ class CalendarController extends Controller
         // if not admin user show tasks if assigned to or created by that user
         if(Auth::user()->is_admin == 0) {
             $pending_tasks = DB::table('task')
-            ->select('task.id', 'name', 'start_date', 'end_date')
-            ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
+            ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('start_date', '>', date("m/d/Y"))
-            ->where('task_assigned.user_id', Auth::user()->id);
+            ->where('status', 1)
+            ->where('created_by_id', $user);
 
             $tasks_in_progress = DB::table('task')
-            ->select('task.id', 'name', 'start_date', 'end_date')
+            ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('start_date', '<=', date("m/d/Y"))
-            ->where('end_date', '>=', date("m/d/Y"))
+            // ->where('start_date', '<=', date("m/d/Y"))
+            // ->where('end_date', '>=', date("m/d/Y"))
+            ->where('status', 1)
             ->where('task_assigned.user_id', Auth::user()->id);
 
             $finished_tasks = DB::table('task')
-            ->select('task.id', 'name', 'start_date', 'end_date')
+            ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('end_date', '<', date("m/d/Y"))
+            ->where('status', 4)
             ->where('task_assigned.user_id', Auth::user()->id);
         }
 
         if(Auth::user()->is_admin == 1 &&  empty($user)) {
-            $pending_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('start_date', '>', date("m/d/Y"));
+            $pending_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1);
  
-            $tasks_in_progress = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('start_date', '<=', date("m/d/Y"))->where('end_date', '>=', date("m/d/Y"));
+            $tasks_in_progress = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1);
  
-            $finished_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('end_date', '<', date("m/d/Y"));
+            $finished_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 4);
         }
 
         if(Auth::user()->is_admin == 1 && $user > 0) {
-            $pending_tasks = DB::table('task')
-            ->select('task.id', 'name', 'start_date', 'end_date')
-            ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
+            $pending_tasks = Task::select('task.id', 'name', 'start_date', 'end_date', 'status')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('start_date', '>', date("m/d/Y"))
-            ->where('task_assigned.user_id', $user);
+            ->where('status', 1)
+            ->where('created_by_id', $user);
 
             $tasks_in_progress = DB::table('task')
-            ->select('task.id', 'name', 'start_date', 'end_date')
+            ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('start_date', '<=', date("m/d/Y"))
-            ->where('end_date', '>=', date("m/d/Y"))
+            // ->where('start_date', '<=', date("m/d/Y"))
+            // ->where('end_date', '>=', date("m/d/Y"))
+            ->where('status', 1)
             ->where('task_assigned.user_id', $user);
 
             $finished_tasks = DB::table('task')
-            ->select('task.id', 'name', 'start_date', 'end_date')
+            ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('end_date', '<', date("m/d/Y"))
+            ->where('status', 4)
             ->where('task_assigned.user_id', $user);
         }
  
@@ -128,17 +127,19 @@ class CalendarController extends Controller
  
         foreach ($pending_tasks as $task) {
  
-            $pending_events[] = ["title" => $task->name . " - незавершенный",
+            $pending_events[] = ["title" => $task->name,
                 "start" => date("Y-m-d", strtotime($task->start_date)),
                 "end" => date("Y-m-d", strtotime($task->end_date)),
-                "backgroundColor" => "#3c8dbc",
-                "borderColor" => "#3c8dbc",
+                "backgroundColor" => "#e83e8c",
+                "borderColor" => "#e83e8c",
                 "className" => "pending",
-                "description" => "<strong>Title:</strong> " . $task->name . "<br/>" .
-                    "<strong>Start date:</strong> " . date("Y-m-d", strtotime($task->start_date)) . "<br/>" .
-                    "<strong>End date:</strong> " . date("Y-m-d", strtotime($task->end_date)) . "<br/>" .
-                    "<a href='' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>" .
-                    "<br/>"
+                "description" => 
+                    "<strong>Начало задания:</strong> " . date("d-m-Y", strtotime($task->start_date)) . "<br/>" .
+                    "<strong>Конец задания:</strong> " . date("d-m-Y", strtotime($task->end_date)) . "<br/>" .
+                    "<strong>Статус:</strong> " . getStyleStatus($task->status) . "<br/>" .
+                    "<strong>Приоритет:</strong> " . getStylePriority($task->priority) .
+
+                    "<a href='". url('/admin/tasks/' . $task->id) ."' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>"
                 ];
         }
  
@@ -147,12 +148,15 @@ class CalendarController extends Controller
             $in_progress_events[] = ["title" => "(В работе) " . $task->name,
                 "start" => date("Y-m-d", strtotime($task->start_date)),
                 "end" => date("Y-m-d", strtotime($task->end_date)),
-                "backgroundColor" => "#f39c12",
-                "borderColor" => "#f39c12",
+                "backgroundColor" => "#007bff",
+                "borderColor" => "#007bff",
                 "className" => "in-progress",
-                "description" => "<strong>Title:</strong> " . $task->name . "<br/>" .
-                    "<strong>Start date:</strong> " . date("Y-m-d", strtotime($task->start_date)) . "<br/>" .
-                    "<strong>End date:</strong> " . date("Y-m-d", strtotime($task->end_date)) . "<br/><br/>" .
+                "description" => 
+                    "<strong>Начало задания:</strong> " . date("d-m-Y", strtotime($task->start_date)) . "<br/>" .
+                    "<strong>Конец задания:</strong> " . date("d-m-Y", strtotime($task->end_date)) . "<br/>" .
+                    "<strong>Статус:</strong> " . getStyleStatus($task->status) . "<br/>" .
+                    "<strong>Приоритет:</strong> " . getStylePriority($task->priority) .
+
                     "<a href='". url('/admin/tasks/' . $task->id) ."' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>"
             ];
         }
@@ -165,9 +169,13 @@ class CalendarController extends Controller
                 "backgroundColor" => "#00a65a",
                 "borderColor" => "#00a65a",
                 "className" => "finished",
-                "description" => "<strong>Title:</strong> " . $task->name . "<br/>" .
-                    "<strong>Start date:</strong> " . date("Y-m-d", strtotime($task->start_date)) . "<br/>" .
-                    "<strong>End date:</strong> " . date("Y-m-d", strtotime($task->end_date)) . "<br/>" 
+                "description" => 
+                    "<strong>Начало задания:</strong> " . date("d-m-Y", strtotime($task->start_date)) . "<br/>" .
+                    "<strong>Конец задания:</strong> " . date("d-m-Y", strtotime($task->end_date)) . "<br/>" .
+                    "<strong>Статус:</strong> " . getStyleStatus($task->status) . "<br/>" .
+                    "<strong>Приоритет:</strong> " . getStylePriority($task->priority) .
+
+                    "<a href='". url('/admin/tasks/' . $task->id) ."' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>"
             ];
         }
  

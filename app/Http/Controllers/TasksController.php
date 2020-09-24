@@ -13,6 +13,7 @@ use App\Models\Project;
 use App\Models\TaskAssigned;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class TasksController extends Controller
@@ -94,7 +95,6 @@ class TasksController extends Controller
 
                     $query->where('user_id', Auth::user()->id);
                 });
-
             }
         }
 
@@ -142,12 +142,19 @@ class TasksController extends Controller
             });
         }
 
-        if(isset($requestData['assigned_users'])){
+        if(isset($requestData['assigned_users']) && !empty($requestData['assigned_users'])){
             $assigned_users = $requestData['assigned_users'];
         }
+
+        if(isset($requestData['assigned_divisions']) && !empty($requestData['assigned_divisions'])){
+            $assigned_divisions = $requestData['assigned_divisions'];
+            $assigned_users = User::whereIn('division_id', $assigned_divisions)->get();
+            $assigned_users = Arr::pluck($assigned_users, 'id');
+        }
+
  
         $requestData['created_by_id'] = Auth::user()->id;
- 
+        
         
         $task = Task::create($requestData);
  
@@ -165,7 +172,7 @@ class TasksController extends Controller
  
             if(isset($assigned_users)) {
  
-                $this->insertAssignedUsers($assigned_users, $task->id);
+                $this->insertAssignedUsers($assigned_users, $task->id, $task->project_id);
             }
         }
  
@@ -226,13 +233,6 @@ class TasksController extends Controller
             });
         }
 
-        
- 
-        // if(empty($requestData['contact_type'])) {
- 
-        //     $requestData['contact_id'] = null;
-        // }
- 
         $requestData['modified_by_id'] = Auth::user()->id;
         
         $task = Task::findOrFail($id);
@@ -255,14 +255,20 @@ class TasksController extends Controller
         // delete assigned users if exist
         TaskAssigned::where('task_id', $id)->delete();
 
-        if(isset($requestData['assigned_users'])){
+        if(isset($requestData['assigned_users']) && !empty($requestData['assigned_users'])){
             $assigned_users = $requestData['assigned_users'];
+        }
+
+        if(isset($requestData['assigned_divisions']) && !empty($requestData['assigned_divisions'])){
+            $assigned_divisions = $requestData['assigned_divisions'];
+            $assigned_users = User::whereIn('division_id', $assigned_divisions)->get();
+            $assigned_users = Arr::pluck($assigned_users, 'id');
         }
  
         // insert documents
         if(isset($assigned_users)) {
  
-            $this->insertAssignedUsers($assigned_users, $id);
+            $this->insertAssignedUsers($assigned_users, $id, $task->project_id);
         }
  
         if(enableEmailNotification() == 1)
@@ -307,9 +313,15 @@ class TasksController extends Controller
     {
         $task = Task::find($id);
         Task::destroy($id);
+
+        $taskAssigned = TaskAssigned::where('task_id', '=', $id)->delete();
+
+        $taskChat = TaskChat::where('task_id', '=', $id)->delete();
+
+        $taskDocument = TaskDocument::where('task_id', '=', $id)->delete();
  
         if(enableEmailNotification() == 1) {
-            $this->mailer->sendDeleteTaskEmail("Задание удалено", User::find($task->assigned_user_id), $task);
+            //$this->mailer->sendDeleteTaskEmail("Задание удалено", User::find($task->assigned_user_id), $task);
         }
  
         return redirect('admin/tasks')->with('flash_message', 'Задание удалено!');
@@ -430,14 +442,14 @@ class TasksController extends Controller
      * @param $users
      * @param $task_id
      */
-    protected function insertAssignedUsers($users, $task_id)
+    protected function insertAssignedUsers($users, $task_id, $project_id)
     {
         foreach ($users as $user) {
  
             $taskUser = new TaskAssigned();
  
             $taskUser->task_id = $task_id;
- 
+            $taskUser->project_id = $project_id;
             $taskUser->user_id = $user;
  
             $taskUser->save();

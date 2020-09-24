@@ -33,41 +33,37 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-3">
-                    @if(\Auth::user()->is_admin == 1)
+                <div class="col-md-4">
                      <div class="card">
                         <div class="card-body">
-                            
+                            <form method="POST" action="{{ url('/admin/calendar') }}" accept-charset="UTF-8" enctype="multipart/form-data">
 
-                                <form method="POST" action="{{ url('/admin/calendar') }}" accept-charset="UTF-8" enctype="multipart/form-data">
+                                {{ csrf_field() }}
 
-                                    {{ csrf_field() }}
-
-                                    <div class="form-group">
-                                        <label for="project_id" class="control-label">Поиск по пользователю</label>
-                                        <select class="form-control" name="user_id" id="user_id">
-                                            <option value="">Выберите пользователя</option>
-                                            @foreach($users as $item)
-                                                @if (Request::input('user_id') == $item->id)
-                                                    <option value="{{ $item->id }}" selected>{{ $item->name }}</option>
-                                                @else
-                                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                     
-                                    <div class="form-group">
-                                        <input class="btn btn-primary" type="submit" value="Показать">
-                                    </div>
-
-                                </form>
-
-                           
+                                <div class="form-group">
+                                    <label for="project_id" class="control-label">Поиск по пользователю</label>
+                                    <select class="form-control" name="user_id" id="user_id">
+                                        <option value="">Выберите пользователя</option>
+                                        @foreach($users as $item)
+                                            @if (Request::input('user_id') == $item->id)
+                                                <option value="{{ $item->id }}" selected>{{ $item->name }}</option>
+                                            @else
+                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                 
+                                <div class="form-group">
+                                    <input class="btn btn-primary float-right" type="submit" value="Показать">
+                                </div>
+                            </form>
                         </div>
                     </div>
-                     @endif
 
+                    
+                </div>
+                <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="box box-solid">
@@ -76,24 +72,18 @@
                                 </div>
                                 <div class="box-body">
 
-
-                                    
-
-
-
-
                                     <!-- the events -->
                                     <div id="external-events">
                                         @if($countPending)
-                                            <div class="external-event bg-light-blue">Незавершенные задачи ({{$countPending}})</div>
+                                            <div class="external-event bg-pink">Созданные пользователем ({{$countPending}})</div>
                                         @endif
              
                                         @if($countInProgress)
-                                            <div class="external-event bg-yellow">Выполняемые задачи ({{$countInProgress}})</div>
+                                            <div class="external-event bg-blue">В работе ({{$countInProgress}})</div>
                                         @endif
              
                                         @if($countFinished)
-                                            <div class="external-event bg-green">Выполненные задачи ({{$countFinished}})</div>
+                                            <div class="external-event bg-green">Завершенные ({{$countFinished}})</div>
                                         @endif
                                     </div>
                                 </div>
@@ -102,9 +92,9 @@
                         </div>
                     </div>
                 </div>
-                <!-- /.col -->
+                
      
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div class="card card-primary">
                         <div class="card-body p-0">
                             <!-- THE CALENDAR -->

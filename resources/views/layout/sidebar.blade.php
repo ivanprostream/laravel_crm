@@ -54,9 +54,22 @@
               </a>
               <ul class="nav nav-treeview">
 
+                @if(user_can('create_task'))
+                  <li class="nav-item">
+                    <a href="{{ url('/admin/tasks/create') }}" class="nav-link" title="Добавить">
+                      Добавить
+                    </a>
+                  </li>
+                @endif
+
                 <li class="nav-item">
                   <a class="nav-link {{ Request::segment(3) == ""?"active":"" }}" href="{{ url('/admin/tasks') }}">
                     В работе
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link {{ Request::segment(3) == "4"?"active":"" }}" href="{{ url('/admin/tasks/4/status') }}">
+                    Завершен
                   </a>
                 </li>
                 <li class="nav-item">
@@ -66,9 +79,11 @@
                 </li>
                 <li class="nav-item">
                   <a class="nav-link {{ Request::segment(3) == "2"?"active":"" }}" href="{{ url('/admin/tasks/2/status') }}">
-                    Выполнен (архив)
+                    Архив
                   </a>
                 </li>
+
+                
 
               </ul>
             </li>

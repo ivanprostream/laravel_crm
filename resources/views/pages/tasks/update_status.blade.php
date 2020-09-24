@@ -20,7 +20,6 @@
         </div>
       </div><!-- /.container-fluid -->
     </section>
-
  
     <section class="content">
         <div class="container-fluid">
@@ -49,8 +48,11 @@
                                     <label for="status" class="control-label">{{ 'Статус' }}</label>
                                     <select name="status" id="status" class="form-control">
                                         @foreach($statuses as $status)
-                                            @if($status->id != $task->status)
+                                            @if($status->id != $task->status && $status->id != 2)
                                                 <option value="{{ $status->id }}">{{ $status->name }}</option>
+                                            @endif
+                                            @if($task->created_by_id == Auth::user()->id && $status->id == 2)
+                                                 <option value="2">Архив</option>
                                             @endif
                                         @endforeach
                                     </select>

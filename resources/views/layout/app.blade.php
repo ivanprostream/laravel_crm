@@ -21,7 +21,10 @@
     @include('layout.header')
     @include('layout.sidebar')
 
+
     <div class="content-wrapper">
+
+      @include('layout.notification')
 
       @yield('content')
       
