@@ -30,11 +30,13 @@ class UsersController extends Controller
         $keyword = $request->get('search');
         $perPage = 25;
 
-        if (!empty($keyword)) {
-            $users = User::where('name', 'like', "%$keyword%")->orWhere('email', 'like', "%$keyword%")->paginate($perPage);
-        } else {
-            $users = User::latest()->paginate($perPage);
-        }
+        // if (!empty($keyword)) {
+        //     $users = User::where('name', 'like', "%$keyword%")->orWhere('email', 'like', "%$keyword%")->paginate($perPage);
+        // } else {
+            
+        // }
+
+        $users = User::all();
 
         return view('pages.users.index', compact('users'));
     }
@@ -142,6 +144,13 @@ class UsersController extends Controller
         if ($request->hasFile('image')) {
             checkDirectory("users");
             $requestData['image'] = uploadFile($request, 'image', public_path('uploads/users'));
+        }
+
+        if(!empty($requestData['password'])) {
+ 
+            $requestData['password'] = bcrypt($requestData['password']);
+        } else {
+            unset($requestData['password']);
         }
         
         $user = User::findOrFail($id);

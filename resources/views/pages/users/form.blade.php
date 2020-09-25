@@ -15,12 +15,11 @@
             {!! $errors->first('division_id', '<p class="text-danger">:message</p>') !!}
         </div>
 
-        @if($formMode == 'create')
-            <div class="form-group {{ $errors->has('password') ? 'has-error' : ''}}">
-                <input class="form-control" name="password" type="password" id="password" value="{{ isset($user->password) ? $user->password : ''}}" placeholder="Пароль">
-                {!! $errors->first('password', '<p class="text-danger">:message</p>') !!}
-            </div>
-        @endif
+        <div class="form-group {{ $errors->has('password') ? 'has-error' : ''}}">
+            <input class="form-control" name="password" type="password" id="password" value="{{ isset($user->password) ? $user->password : ''}}" placeholder="Пароль">
+            {!! $errors->first('password', '<p class="text-danger">:message</p>') !!}
+        </div>
+
 
         @if($formMode == 'create' || ($formMode == 'edit' && $user->is_admin == 0))
             <div class="form-group {{ $errors->has('is_active') ? 'has-error' : ''}}">
