@@ -83,9 +83,7 @@ class CalendarController extends Controller
 
         if(Auth::user()->is_admin == 1 &&  empty($user)) {
             $pending_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1);
- 
             $tasks_in_progress = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1);
- 
             $finished_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 4);
         }
 
@@ -136,7 +134,6 @@ class CalendarController extends Controller
                     "<strong>Конец задания:</strong> " . date("d-m-Y", strtotime($task->end_date)) . "<br/>" .
                     "<strong>Статус:</strong> " . getStyleStatus($task->status) . "<br/>" .
                     "<strong>Приоритет:</strong> " . getStylePriority($task->priority) .
-
                     "<a href='". url('/admin/tasks/' . $task->id) ."' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>"
                 ];
         }
