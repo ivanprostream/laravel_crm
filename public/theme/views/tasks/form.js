@@ -36,6 +36,7 @@ $(function () {
         $("select#assigned_users").val(null).trigger('change');
     });
 
+
 });
 
 

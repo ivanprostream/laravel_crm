@@ -13,7 +13,7 @@ class CalendarController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('admin:index-show_calendar');
+        $this->middleware('admin:index-show_calendar|postTasksByUser-show_calendar');
     }
 
     public function index()
@@ -36,7 +36,6 @@ class CalendarController extends Controller
 
         $eventData = $this->getTaskStatusByDate($requestData['user_id']);
         
-
  
         list($events, $countPending, $countInProgress, $countFinished) = $eventData;
  
@@ -61,16 +60,15 @@ class CalendarController extends Controller
             ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('status', 1)
-            ->where('created_by_id', $user);
+            ->whereIn('status', [1, 4])
+            //->orWhere('status', 4)
+            ->where('created_by_id', Auth::user()->id);
 
             $tasks_in_progress = DB::table('task')
             ->select('task.id', 'name', 'start_date', 'end_date', 'status', 'priority')
             ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            // ->where('start_date', '<=', date("m/d/Y"))
-            // ->where('end_date', '>=', date("m/d/Y"))
             ->where('status', 1)
             ->where('task_assigned.user_id', Auth::user()->id);
 
@@ -95,7 +93,7 @@ class CalendarController extends Controller
             $pending_tasks = Task::select('task.id', 'name', 'start_date', 'end_date', 'status')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
-            ->where('status', 1)
+            ->whereIn('status', [1, 4])
             ->where('created_by_id', $user);
 
             $tasks_in_progress = DB::table('task')
@@ -156,7 +154,6 @@ class CalendarController extends Controller
                     "<strong>Конец задания:</strong> " . date("d-m-Y", strtotime($task->end_date)) . "<br/>" .
                     "<strong>Статус:</strong> " . getStyleStatus($task->status) . "<br/>" .
                     "<strong>Приоритет:</strong> " . getStylePriority($task->priority) .
-
                     "<a href='". url('/admin/tasks/' . $task->id) ."' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>"
             ];
         }
@@ -174,7 +171,6 @@ class CalendarController extends Controller
                     "<strong>Конец задания:</strong> " . date("d-m-Y", strtotime($task->end_date)) . "<br/>" .
                     "<strong>Статус:</strong> " . getStyleStatus($task->status) . "<br/>" .
                     "<strong>Приоритет:</strong> " . getStylePriority($task->priority) .
-
                     "<a href='". url('/admin/tasks/' . $task->id) ."' class='btn btn-info btn-sm'><i class='fa fa-eye'></i> Просмотр</a>"
             ];
         }

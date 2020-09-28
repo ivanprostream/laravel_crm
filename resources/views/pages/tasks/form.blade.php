@@ -5,15 +5,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group {{ $errors->has('name') ? 'has-error' : ''}}">
-                            <label for="name" class="control-label">{{ 'Название задания' }}</label>
-                            <input class="form-control" name="name" type="text" id="name" value="{{ isset($task->name) ? $task->name : ''}}" placeholder="Название задания">
+                            <label for="name" class="control-label">{{ 'Название задания *' }}</label>
+                            <input class="form-control" name="name" type="text" id="name" value="{{ isset($task->name) ? $task->name : old('name')}}" placeholder="Название задания">
                             {!! $errors->first('name', '<p class="text-danger">:message</p>') !!}
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group {{ $errors->has('project_id') ? 'has-error' : ''}}">
-                            <label for="project_id" class="control-label">{{ 'Проект' }}</label>
+                            <label for="project_id" class="control-label">{{ 'Проект *' }}</label>
                             <select class="form-control" name="project_id" id="project_id">
                                 <option value="">Выберите проект</option>
                                 @foreach(getDivisions() as $item)
@@ -33,7 +33,11 @@
                             <label for="type_id" class="control-label">{{ 'Тип задания' }}</label>
                             <select name="type_id" id="type_id" class="form-control">
                                 @foreach($task_types as $type)
-                                    <option value="{{ $type->id }}" {{ isset($task->type_id) && $task->type_id == $type->id ? 'selected' : ''}}>{{ $type->name }}</option>
+
+                                    <option value="{{ $type->id }}" 
+                                        {{ isset($task->type_id) && $task->type_id == $type->id ? 'selected' : ''}} 
+                                        {{ !isset($task->type_id) && old('type_id') == $type->id ? 'selected':'' }}>
+                                        {{ $type->name }}</option>
                                 @endforeach
                             </select>
                             {!! $errors->first('type_id', '<p class="text-danger">:message</p>') !!}
@@ -44,7 +48,10 @@
                             <label for="status" class="control-label">{{ 'Статус задания' }}</label>
                             <select name="status" id="status" class="form-control">
                                 @foreach($statuses as $status)
-                                    <option value="{{ $status->id }}" {{ isset($task->status) && $task->status == $status->id ? 'selected' : ''}}>{{ $status->name }}</option>
+                                    <option value="{{ $status->id }}" 
+                                        {{ isset($task->status) && $task->status == $status->id ? 'selected' : ''}}
+                                        {{ !isset($task->status) && old('status') == $status->id ? 'selected':'' }}>
+                                        {{ $status->name }}</option>
                                 @endforeach
                             </select>
                             {!! $errors->first('status', '<p class="text-danger">:message</p>') !!}
@@ -55,7 +62,10 @@
                             <label for="priority" class="control-label">{{ 'Приоритет' }}</label>
                             <select class="form-control" name="priority" id="priority">
                                 @foreach(array('Низкий', 'Нормальный', 'Высокий') as $value)
-                                    <option value="{{ $value }}" {{ isset($task->priority) && $task->priority == $value ? 'selected' : ''}}>{{ $value }}</option>
+                                    <option value="{{ $value }}" 
+                                    {{ isset($task->priority) && $task->priority == $value ? 'selected' : ''}}
+                                    {{ !isset($task->priority) && old('priority') == $value ? 'selected':'' }}>
+                                {{ $value }}</option>
                                 @endforeach
                             </select>
                             {!! $errors->first('priority', '<p class="text-danger">:message</p>') !!}
@@ -64,7 +74,7 @@
                     <div class="col-md-12">
                         <div class="form-group {{ $errors->has('description') ? 'has-error' : ''}}">
                             <label for="description" class="control-label">{{ 'Описание' }}</label>
-                            <textarea class="form-control textarea" name="description" type="text" id="description">{{ isset($task->description) ? $task->description : ''}}</textarea>
+                            <textarea class="form-control textarea" name="description" type="text" id="description">{{ isset($task->description) ? $task->description : old('description')}}</textarea>
                             {!! $errors->first('description', '<p class="text-danger">:message</p>') !!}
                         </div>
                          
@@ -120,14 +130,14 @@
                     <div class="col-md-12">
                         <div class="form-group {{ $errors->has('start_date') ? 'has-error' : ''}}">
                             <label for="start_date" class="control-label">{{ 'Дата начала' }}</label>
-                            <input class="form-control" name="start_date" type="text" id="start_date" value="{{ isset($task->start_date) ? $task->start_date : ''}}" >
+                            <input class="form-control" name="start_date" type="text" id="start_date" value="{{ isset($task->start_date) ? $task->start_date : old('start_date')}}" >
                             {!! $errors->first('start_date', '<p class="text-danger">:message</p>') !!}
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group {{ $errors->has('end_date') ? 'has-error' : ''}}">
                             <label for="end_date" class="control-label">{{ 'Дата конца' }}</label>
-                            <input class="form-control" name="end_date" type="text" id="end_date" value="{{ isset($task->end_date) ? $task->end_date : ''}}" >
+                            <input class="form-control" name="end_date" type="text" id="end_date" value="{{ isset($task->end_date) ? $task->end_date : old('end_date')}}" >
                             {!! $errors->first('end_date', '<p class="text-danger">:message</p>') !!}
                         </div>
                     </div>
@@ -137,7 +147,8 @@
                             <label for="documents" class="control-label">{{ 'Документы' }} <i class="fa fa-link"></i></label>
                             <select id="documents" name="documents[]" multiple="multiple" data-placeholder="Выберите документы" data-dropdown-css-class="select2-purple" class="form-control">
                                 @foreach($documents as $document)
-                                    <option value="{{ $document->id }}" {{ isset($selected_documents) && in_array($document->id, $selected_documents)?"selected":"" }}>{{ $document->name }}</option>
+                                    <option value="{{ $document->id }}" 
+                                        {{ isset($selected_documents) && in_array($document->id, $selected_documents)?"selected":"" }}>{{ $document->name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -19,6 +19,7 @@ class CreateTaskAssignedTable extends Migration
             $table->integer('task_id')->unsigned();
             $table->integer('project_id')->unsigned();
             $table->integer('user_id')->unsigned();
+            $table->integer('last_message')->unsigned();
             $table->timestamps();
 
             $table->foreign('task_id')->references('id')->on('task')->onDelete('cascade');

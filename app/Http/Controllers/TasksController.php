@@ -399,18 +399,38 @@ class TasksController extends Controller
 
 
     public function postTaskMessage(Request $request, $id)
-    {
-        $this->validate($request, [
-            'message' => 'required'
-        ]);
-
-        $task = Task::find($id);
+    {   
+        $task = Task::findOrFail($id);
         $user = \Auth::user()->id;
-        
-        $role = TaskChat::create(['description' => $request->message, 'task_id' => $task->id, 'user_id' => $user]);
+
+        if(isset($request->add)){
+
+            $this->validate($request, [
+            'message' => 'required'
+            ]);
+            
+            $role = TaskChat::create(['description' => $request->message, 'task_id' => $task->id, 'user_id' => $user]);
+
+            return redirect('admin/tasks/'.$id);
+
+        }
+
+        if(isset($request->read)){
+
+            // get last chat message id
+
+            $lastMessageId = TaskChat::where('task_id', $task->id)->orderBy('id', 'DESC')->first();
+
+            // update
+
+            $taskAssigned = TaskAssigned::where('task_id', $task->id)->where('user_id' , $user);
+            $taskAssigned->update(['last_message' => $lastMessageId->id]);
+
+            return redirect('admin/tasks/'.$id);
+        }
+ 
 
 
-        return redirect('admin/tasks/'.$id);
     }
  
  

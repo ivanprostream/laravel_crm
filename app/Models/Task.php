@@ -82,7 +82,7 @@ class Task extends Model
 
     public function messages()
     {
-        return $this->hasMany(TaskChat::class)->orderBy('id', 'DESC');
+        return $this->hasMany(TaskChat::class)->orderBy('id', 'ASC');
     }
 
 

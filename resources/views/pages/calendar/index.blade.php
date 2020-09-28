@@ -33,6 +33,8 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
+
+                @if(user_can('show_user_tasks_calendar'))
                 <div class="col-md-4">
                      <div class="card">
                         <div class="card-body">
@@ -60,9 +62,9 @@
                             </form>
                         </div>
                     </div>
-
-                    
                 </div>
+                @endif
+
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">

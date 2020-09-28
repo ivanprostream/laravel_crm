@@ -50,6 +50,7 @@
             </div>
 
             <div class="col-md-6">
+
                 <!-- DIRECT CHAT -->
                 <div class="card direct-chat direct-chat-primary">
                   <div class="card-header">
@@ -64,7 +65,7 @@
                   <!-- /.card-header -->
                   <div class="card-body">
                     <!-- Conversations are loaded here -->
-                    <div class="direct-chat-messages">
+                    <div id="chat-body" class="direct-chat-messages">
 
 
                       @foreach($task->messages as $item)
@@ -132,7 +133,8 @@
                       <div class="input-group">
                         <input type="text" name="message" placeholder=" Сообщение ..." class="form-control">
                         <span class="input-group-append">
-                          <button type="submit" class="btn btn-primary">Отправить</button>
+                            <input type="submit" name="add" class="btn btn-primary" value="Отправить">
+                            <input type="submit" name="read" class="btn btn-secondary" value="Прочитано">
                         </span>
                       </div>
                       {!! $errors->first('message', '<p class="text-danger">:message</p>') !!}
@@ -188,10 +190,9 @@
                                                     <li>
                                                         <a href="{{ url('public/uploads/documents/' . $document->file) }}">{{ $document->name }}</a>
                                                         @if(user_can('edit_document_task'))
-            <a href="{{ url('/admin/tasks/' . $document->id . '/' . $task->id . '/document') }}" title="Редактировать"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Редактировать</button></a>
+                                                        <a href="{{ url('/admin/tasks/' . $document->id . '/' . $task->id . '/document') }}" title="Редактировать"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Редактировать</button></a>
                                                         @endif
                                                     </li>
-                                                    
 
                                                 @endforeach
                                                 </ul>
@@ -206,4 +207,10 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('scripts')
+
+  <script type="text/javascript" src="{{ url('public/theme/views/tasks/chat.js') }}"></script>
+
 @endsection

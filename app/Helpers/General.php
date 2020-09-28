@@ -121,6 +121,40 @@ function getUnreadMessages()
 }
 
 /**
+ * get Unread Chat messages
+ *
+ *
+ * @return mixed
+ */
+function getUnreadChatMessages()
+{
+
+    $messages = \App\Models\TaskAssigned::join('task', 'task.id', '=', 'task_assigned.task_id')
+        //->crossJoin('task_chats', 'task_chats.task_id', '=', 'task_assigned.task_id')
+        ->where('task_assigned.user_id', \Auth::user()->id)
+        ->where('task.status', 1)
+
+        ->select(["task.name", "task_assigned.last_message", "task_assigned.user_id", "task_assigned.task_id" ])
+        ->get();
+
+    $list = array();
+    foreach ($messages as $value) {
+        $getLastMessageId = \App\Models\TaskChat::where('task_id', $value['task_id'])->where('user_id', '!=' , $value['user_id'])->orderBy('id', 'desc')->first();
+
+        if(!isset($getLastMessageId) && !empty($getLastMessageId)){
+            if($getLastMessageId->id > $value['last_message']){
+                $list[] = array('name' => $value['name'], 'id' => $value['task_id']);
+                //echo 'New message in task #'.$value['task_id'].'<br>';
+            }
+        }
+
+        
+    }
+
+    return  $list;
+}
+
+/**
  * getDivisions
  *
  *

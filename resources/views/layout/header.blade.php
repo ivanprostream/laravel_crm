@@ -17,6 +17,25 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
 
+       <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">{{ count(getUnreadChatMessages()) }}</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">{{ count(getUnreadChatMessages()) }} сообщений в чате</span>
+
+          @foreach(getUnreadChatMessages() as $message)
+          <div class="dropdown-divider"></div>
+          <a href="{{ url('/admin/tasks/' . $message['id']) }}" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> {{ $message['name'] }}
+          </a>
+          @endforeach
+
+        </div>
+      </li>
+
       <!-- Messages: style can be found in dropdown.less-->
  
       <li class="nav-item dropdown">
