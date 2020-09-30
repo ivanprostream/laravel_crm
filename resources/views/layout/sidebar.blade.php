@@ -64,7 +64,10 @@
 
                 <li class="nav-item">
                   <a class="nav-link {{ Request::segment(3) == ""?"active":"" }}" href="{{ url('/admin/tasks') }}">
-                    В работе
+                    В работе 
+                    @if(count(getUnreadChatMessages()) > 0)
+                      <span class="badge badge-warning right">{{ count(getUnreadChatMessages()) }}</span>
+                    @endif
                   </a>
                 </li>
                 <li class="nav-item">

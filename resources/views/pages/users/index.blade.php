@@ -28,14 +28,13 @@
       </div><!-- /.container-fluid -->
     </section>
 
-
     <section class="content">
         <div class="container-fluid">
             <div class="card">
                 <div class="card-body">
                     <a href="{{ url('/admin/users/create') }}" class="btn btn-success pull-right float-r" title="Add New user">
-                            <i class="fa fa-plus" aria-hidden="true"></i> Добавить
-                        </a>
+                        <i class="fa fa-plus" aria-hidden="true"></i> Добавить
+                    </a>
                 </div>
                 <!-- /.card-body -->
             </div>
@@ -137,8 +136,6 @@
         },
     });
 </script>
-
-
 
 @endsection
 

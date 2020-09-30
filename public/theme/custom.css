@@ -40,3 +40,8 @@
 .dataTables_filter label {
 	display: block;
 }
+
+li.nav-item.active a {
+	color:#007bff;
+}
+

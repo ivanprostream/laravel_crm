@@ -14,6 +14,8 @@
       
     </ul>
 
+
+
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
 
@@ -24,12 +26,12 @@
           <span class="badge badge-warning navbar-badge">{{ count(getUnreadChatMessages()) }}</span>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">{{ count(getUnreadChatMessages()) }} сообщений в чате</span>
+          <span class="dropdown-item dropdown-header">сообщений в чате</span>
 
-          @foreach(getUnreadChatMessages() as $message)
+          @foreach(getUnreadChatMessages() as $chatId)
           <div class="dropdown-divider"></div>
-          <a href="{{ url('/admin/tasks/' . $message['id']) }}" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> {{ $message['name'] }}
+          <a href="{{ url('/admin/tasks/' . $chatId['task_id']) }}" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> {{ $chatId['name'] }}
           </a>
           @endforeach
 

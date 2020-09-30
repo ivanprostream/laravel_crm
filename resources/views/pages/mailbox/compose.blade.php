@@ -44,9 +44,10 @@
                         <div class="form-group">
                             <?php $selected_receivers = old('receiver_id') ?>
                             <select name="receiver_id[]" id="receiver_id" multiple class="form-control">
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ $selected_receivers!=null && in_array($user->id, $selected_receivers)?"selected":"" }}>{{ $user->name }}</option>
-                                @endforeach
+                              <option value="all">Всем сотрудникам</option>
+                              @foreach($users as $user)
+                                  <option value="{{ $user->id }}" {{ $selected_receivers!=null && in_array($user->id, $selected_receivers)?"selected":"" }}>{{ $user->name }}</option>
+                              @endforeach
                             </select>
                             {!! $errors->first('receiver_id', '<p class="text-danger">:message</p>') !!}
                         </div>

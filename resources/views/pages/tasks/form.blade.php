@@ -77,10 +77,10 @@
                             <textarea class="form-control textarea" name="description" type="text" id="description">{{ isset($task->description) ? $task->description : old('description')}}</textarea>
                             {!! $errors->first('description', '<p class="text-danger">:message</p>') !!}
                         </div>
-                         
                     </div>
                   
-                    <div class="col-md-12"><label for="assigned_users" class="control-label">{{ 'Исполнители' }}</label>
+                    <div class="col-md-12">
+                        <label for="assigned_users" class="control-label">{{ 'Исполнители' }}</label>
                     <div class="card card-primary card-outline card-tabs">
                         <div class="card-header p-0 pt-1 border-bottom-0">
                             <ul class="nav nav-tabs" id="custom-tabs-assigned" role="tablist">
@@ -98,6 +98,7 @@
                                 <div class="form-group {{ $errors->has('assigned_users') ? 'has-error' : ''}}">
                     
                                     <select name="assigned_users[]" id="assigned_users" class="form-control" multiple="multiple" data-placeholder="Выберите сотрудника(ов)" data-dropdown-css-class="select2-purple">
+                                            <option value="all">Всем сотрудникам</option>
                                         @foreach($users as $user)
                                             <option value="{{ $user->id }}" {{ isset($selected_assigned_users) && in_array($user->id, $selected_assigned_users)?"selected":"" }}>{{ $user->name }}</option>
                                         @endforeach
@@ -130,14 +131,14 @@
                     <div class="col-md-12">
                         <div class="form-group {{ $errors->has('start_date') ? 'has-error' : ''}}">
                             <label for="start_date" class="control-label">{{ 'Дата начала' }}</label>
-                            <input class="form-control" name="start_date" type="text" id="start_date" value="{{ isset($task->start_date) ? $task->start_date : old('start_date')}}" >
+                            <input class="form-control" name="start_date" type="text" id="start_date" value="{{ isset($task->start_date) ? getCalendarDate($task->start_date) : old('start_date')}}" >
                             {!! $errors->first('start_date', '<p class="text-danger">:message</p>') !!}
                         </div>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group {{ $errors->has('end_date') ? 'has-error' : ''}}">
                             <label for="end_date" class="control-label">{{ 'Дата конца' }}</label>
-                            <input class="form-control" name="end_date" type="text" id="end_date" value="{{ isset($task->end_date) ? $task->end_date : old('end_date')}}" >
+                            <input class="form-control" name="end_date" type="text" id="end_date" value="{{ isset($task->end_date) ? getCalendarDate($task->end_date) : old('end_date')}}" >
                             {!! $errors->first('end_date', '<p class="text-danger">:message</p>') !!}
                         </div>
                     </div>

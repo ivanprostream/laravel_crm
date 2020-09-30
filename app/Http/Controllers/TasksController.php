@@ -142,7 +142,12 @@ class TasksController extends Controller
             });
         }
 
-        if(isset($requestData['assigned_users']) && !empty($requestData['assigned_users'])){
+        if(isset($requestData['assigned_users']) && $requestData['assigned_users'][0] == 'all'){
+            $assigned_users = User::where('is_active', 1)->get();
+            $assigned_users = Arr::pluck($assigned_users, 'id');
+        }
+
+        if(isset($requestData['assigned_users']) && !empty($requestData['assigned_users']) && $requestData['assigned_users'][0] != 'all'){
             $assigned_users = $requestData['assigned_users'];
         }
 
@@ -152,9 +157,9 @@ class TasksController extends Controller
             $assigned_users = Arr::pluck($assigned_users, 'id');
         }
 
- 
+        $requestData['start_date'] = getCalendarDate($requestData['start_date']);
+        $requestData['end_date']   = getCalendarDate($requestData['end_date']);
         $requestData['created_by_id'] = Auth::user()->id;
-        
         
         $task = Task::create($requestData);
  
@@ -162,7 +167,6 @@ class TasksController extends Controller
         if($task && $task->id) {
  
             if(isset($documents)) {
- 
                 $this->insertDocuments($documents, $task->id);
             }
         }
@@ -234,6 +238,8 @@ class TasksController extends Controller
         }
 
         $requestData['modified_by_id'] = Auth::user()->id;
+        $requestData['start_date'] = getCalendarDate($requestData['start_date']);
+        $requestData['end_date']   = getCalendarDate($requestData['end_date']);
         
         $task = Task::findOrFail($id);
  
@@ -471,6 +477,7 @@ class TasksController extends Controller
             $taskUser->task_id = $task_id;
             $taskUser->project_id = $project_id;
             $taskUser->user_id = $user;
+            $taskUser->last_message = 0;
  
             $taskUser->save();
         }
@@ -489,8 +496,8 @@ class TasksController extends Controller
         $this->validate($request, [
             'name'       => 'required',
             'project_id' => 'required',
-            'start_date' => 'nullable|date',
-            'end_date'   => 'nullable|date|after_or_equal:start_date'
+            'start_date' => 'nullable',
+            'end_date'   => 'nullable'
         ]);
     }
 

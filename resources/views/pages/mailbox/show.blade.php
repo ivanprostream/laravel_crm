@@ -27,7 +27,6 @@
             <div class="col-md-3">
                 <a href="{{ url('admin/mailbox') }}" class="btn btn-secondary btn-block margin-bottom">Назад </a>
                 <br>
- 
                 @include('pages.mailbox.includes.folders_panel')
             </div>
  
@@ -44,14 +43,18 @@
                         <div class="mailbox-read-info">
                             <h3>{{ $mailbox->subject }}</h3>
                             <h5>От: {{ $mailbox->sender->email }}
-                                <span class="mailbox-read-time pull-right">{{ !empty($mailbox->time_sent)?date("d M. Y h:i A", strtotime($mailbox->time_sent)):"not sent yet" }}</span></h5>
+                            <span class="mailbox-read-time pull-right">{{ !empty($mailbox->time_sent)?date("d M. Y h:i A", strtotime($mailbox->time_sent)):"not sent yet" }}</span></h5>
+                            <div class="text-right">
+                                <a class="btn btn-info btn-sm" href="{{ url('/admin/mailbox-reply/'.$mailbox->id) }}">Ответить</a>
+                                </br></br>
+                            </div>
                         </div>
- 
                         <!-- /.mailbox-controls -->
                         <div class="mailbox-read-message">
                             {!! $mailbox->body !!}
                         </div>
                         <!-- /.mailbox-read-message -->
+                        
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">

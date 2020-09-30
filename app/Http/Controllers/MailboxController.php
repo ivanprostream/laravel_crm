@@ -12,6 +12,7 @@ use App\Models\MailboxTmpReceiver;
 use App\Models\MailboxUserFolder;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -22,7 +23,7 @@ class MailboxController extends Controller
 
     public function __construct(MailerFactory $mailer)
     {
-        $this->middleware('admin:index-list_emails|create-compose_email|show-view_email|toggleImportant-toggle_important_email|trash-trash_email|getReply-reply_email|getForward-forward_email|send-send_email', ['except' => ['store', 'postReply', 'postForward']]);
+        $this->middleware('admin:index-list_emails|create-compose_email|show-view_email|toggleImportant-toggle_important_email|trash-trash_email|trash_one-trash_email|getReply-reply_email|getForward-forward_email|send-send_email', ['except' => ['store', 'postReply', 'postForward']]);
  
         $this->mailer = $mailer;
         $this->getFolders();
@@ -47,6 +48,7 @@ class MailboxController extends Controller
         }
 
         $messages = $this->getData($keyword, $perPage, $folder);
+
         $unreadMessages = count(getUnreadMessages());
 
         return view('pages.mailbox.index', compact('folders', 'messages', 'unreadMessages'));
@@ -93,8 +95,17 @@ class MailboxController extends Controller
         } catch (\Exception $ex) {
             return redirect('admin/mailbox-create')->with('flash_error', $ex->getMessage());
         }
- 
+        
+
         $receiver_ids = $request->receiver_id;
+        if($receiver_ids[0] == 'all'){
+            $receiver_ids = User::where('is_active', 1)->where('id', '!=', Auth::user()->id )->get();
+            $receiver_ids = Arr::pluck($receiver_ids, 'id');
+        }else{
+            $receiver_ids = $request->receiver_id;
+        }
+
+
         $subject = $request->subject;
         $body = $request->body;
         $submit = $request->submit;
@@ -142,8 +153,7 @@ class MailboxController extends Controller
         $unreadMessages = count(getUnreadMessages());
  
         $mailbox = Mailbox::find($id);
- 
-//        $folder = $mailbox->userFolder()->folder()->first();
+
  
         // if this message from "Inbox" then set is_unread=0
         if(($flag = $mailbox->flag()) && isset($flag->is_unread) && $flag->is_unread == 1) {
@@ -207,6 +217,37 @@ class MailboxController extends Controller
         }
  
         return response()->json(['state' => 1, 'msg' => 'messages moved to trashed folder', 'updated' => $updated], 200);
+    }
+
+    /**
+     * trash email
+     *
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function trash_one(Request $request)
+    {
+
+        $trashFolder = MailboxFolder::where('title', 'Trash')->first();
+
+        $id = $request->user_mailbox_id;
+        $mailbox_user_folder = MailboxUserFolder::find($id);
+        $mailbox_user_folder->folder_id = $trashFolder->id;
+        $mailbox_user_folder->save();
+
+
+
+        return redirect('admin/mailbox/' . $trashFolder->title)->with('flash_message', 'Сообщение удалено');
+ 
+        // foreach ($request->mailbox_user_folder_ids as $id) {
+        //     $mailbox_user_folder = MailboxUserFolder::find($id);
+        //     $mailbox_user_folder->folder_id = $trashFolder->id;
+        //     $mailbox_user_folder->save();
+        //     $updated[] = $mailbox_user_folder;
+        // }
+ 
+        // return response()->json(['state' => 1, 'msg' => 'messages moved to trashed folder', 'updated' => $updated], 200);
     }
  
     /**

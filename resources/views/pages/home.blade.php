@@ -44,7 +44,6 @@
               </div>
               <!-- /.card-header -->
 
-
               @if($tasks)
               <div class="card-body p-0">
                 <div class="table-responsive">
@@ -60,10 +59,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                      @foreach($tasks as $item)  
+                      @foreach($tasks as $count=>$item)  
                       @if(1 == $item->task->status)
                       <tr>
-                        <td></td>
+                        <td>{{ $count }}</td>
                         <td>{{ $item->task->name }}</td>
                         <td><span class="badge badge-warning">{{ $item->task->type->name }}</span></td>
                         <td><span class="badge badge-success">{{ $item->task->getStatus->name }}</span></td>

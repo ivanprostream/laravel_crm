@@ -2,6 +2,7 @@
  
 use App\Models\Setting;
 use App\Models\Task;
+use App\User;
 /**
  * upload file
  *
@@ -121,6 +122,29 @@ function getUnreadMessages()
 }
 
 /**
+ * get User mailbox id
+ *
+ *
+ * @return mixed
+ */
+function getUserMailboxId($id)
+{
+    $folder = \App\Models\MailboxFolder::where('id', 1)->first();
+
+    $messages = \App\Models\Mailbox::join('mailbox_receiver', 'mailbox_receiver.mailbox_id', '=', 'mailbox.id')
+        ->join('mailbox_user_folder', 'mailbox_user_folder.user_id', '=', 'mailbox_receiver.receiver_id')
+        ->where('mailbox_user_folder.mailbox_id', $id)
+        ->where('mailbox_user_folder.user_id', \Auth::user()->id)
+        ->whereRaw('mailbox.id=mailbox_user_folder.mailbox_id')
+        ->select("mailbox_user_folder.id")
+        ->first();
+
+    return $messages->id;
+}
+
+
+
+/**
  * get Unread Chat messages
  *
  *
@@ -130,28 +154,24 @@ function getUnreadChatMessages()
 {
 
     $messages = \App\Models\TaskAssigned::join('task', 'task.id', '=', 'task_assigned.task_id')
-        //->crossJoin('task_chats', 'task_chats.task_id', '=', 'task_assigned.task_id')
         ->where('task_assigned.user_id', \Auth::user()->id)
         ->where('task.status', 1)
-
         ->select(["task.name", "task_assigned.last_message", "task_assigned.user_id", "task_assigned.task_id" ])
         ->get();
 
-    $list = array();
+    $data = array();
     foreach ($messages as $value) {
         $getLastMessageId = \App\Models\TaskChat::where('task_id', $value['task_id'])->where('user_id', '!=' , $value['user_id'])->orderBy('id', 'desc')->first();
-
-        if(!isset($getLastMessageId) && !empty($getLastMessageId)){
-            if($getLastMessageId->id > $value['last_message']){
-                $list[] = array('name' => $value['name'], 'id' => $value['task_id']);
+        //echo $getLastMessageId->id.'  '.$value['last_message'].'<br>';
+        if(isset($getLastMessageId) && !empty($getLastMessageId->id)){
+            if($getLastMessageId->id > $value['last_message'] || $value['last_message']==0){
+                $data[] = $value;
                 //echo 'New message in task #'.$value['task_id'].'<br>';
             }
         }
-
-        
     }
 
-    return  $list;
+    return $data;
 }
 
 /**
@@ -261,7 +281,7 @@ function getTasksByLastDay()
     ->join('users','users.id','=','task.created_by_id')
     ->where('task_assigned.user_id', $user)
     ->where('task.status', $taskStatus)
-    ->where('end_date', '<=', date("m/d/Y"))
+    ->where('end_date', '<=', $today)
     ->get();
 
     return $tasks;
@@ -282,6 +302,21 @@ function getNormalizeDate($date)
         return $date;
     }
     
+}
+
+/**
+ * get Normalize date
+ *
+ *
+ * @return mixed
+ */
+function getCalendarDate($date)
+{   if(isset($date) && !empty($date)){
+        $oldDate = explode("/", $date);
+        return $oldDate[1].'/'.$oldDate[0].'/'.$oldDate[2];
+    }else{
+        return $date;
+    }
 }
 
 /**
@@ -317,17 +352,8 @@ function getStyleStatus($status)
         return '<span class="badge bg-danger">Отменен</span>';
     }elseif(4 == $status){
         return '<span class="badge bg-primary">Завершен</span>';
-    }
-
-    
+    }    
 }
-
-
-
-
-
-
-
 
 
 

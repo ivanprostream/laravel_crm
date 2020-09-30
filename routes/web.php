@@ -56,6 +56,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
     Route::get('/mailbox-show/{id}', 'MailboxController@show');
     Route::put('/mailbox-toggle-important', 'MailboxController@toggleImportant');
     Route::delete('/mailbox-trash', 'MailboxController@trash');
+    Route::delete('/mailbox-trash-one', 'MailboxController@trash_one');
+    
     Route::get('/mailbox-reply/{id}', 'MailboxController@getReply');
     Route::post('/mailbox-reply/{id}', 'MailboxController@postReply');
     Route::get('/mailbox-forward/{id}', 'MailboxController@getForward');

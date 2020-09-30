@@ -61,6 +61,7 @@ class CalendarController extends Controller
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->whereIn('status', [1, 4])
+            ->whereNull('deleted_at')
             //->orWhere('status', 4)
             ->where('created_by_id', Auth::user()->id);
 
@@ -70,6 +71,7 @@ class CalendarController extends Controller
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->where('status', 1)
+            ->whereNull('deleted_at')
             ->where('task_assigned.user_id', Auth::user()->id);
 
             $finished_tasks = DB::table('task')
@@ -78,20 +80,22 @@ class CalendarController extends Controller
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->where('status', 4)
+            ->whereNull('deleted_at')
             ->where('task_assigned.user_id', Auth::user()->id);
         }
 
         if(Auth::user()->is_admin == 1 &&  empty($user)) {
-            $pending_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1);
-            $tasks_in_progress = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1);
-            $finished_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 4);
+            $pending_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1)->whereNull('deleted_at');
+            $tasks_in_progress = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 1)->whereNull('deleted_at');
+            $finished_tasks = Task::whereNotNull('start_date')->whereNotNull('end_date')->where('status', 4)->whereNull('deleted_at');
         }
 
-        if(Auth::user()->is_admin == 1 && $user > 0) {
+        if($user > 0) {
             $pending_tasks = Task::select('task.id', 'name', 'start_date', 'end_date', 'status')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->whereIn('status', [1, 4])
+            ->whereNull('deleted_at')
             ->where('created_by_id', $user);
 
             $tasks_in_progress = DB::table('task')
@@ -99,6 +103,7 @@ class CalendarController extends Controller
             ->join('task_assigned', 'task_assigned.task_id', '=', 'task.id')
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
+            ->whereNull('deleted_at')
             // ->where('start_date', '<=', date("m/d/Y"))
             // ->where('end_date', '>=', date("m/d/Y"))
             ->where('status', 1)
@@ -110,6 +115,7 @@ class CalendarController extends Controller
             ->whereNotNull('start_date')
             ->whereNotNull('end_date')
             ->where('status', 4)
+            ->whereNull('deleted_at')
             ->where('task_assigned.user_id', $user);
         }
  

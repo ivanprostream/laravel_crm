@@ -64,9 +64,6 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            @if(\Auth::user()->is_admin == 1)
-                                                <th>#</th>
-                                            @endif
                                             <th>Название</th>
                                             <th>Приоритет</th>
                                             <th>Статус</th>
@@ -80,12 +77,9 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($tasks as $item)
+                                            @foreach($tasks as $count=>$item)
                                             @if($status_type == $item->status)
                                             <tr>
-                                                @if(\Auth::user()->is_admin == 1)
-                                                    <td>{{ $item->id }}</td>
-                                                @endif
                                                 <td>{{ $item->name }}</td>
                                                 <td>{!! getStylePriority($item->priority) !!}</td>
                                                 <td>{!! getStyleStatus($item->status) !!}</td>
@@ -97,7 +91,7 @@
                                                         {{ $user['name'] }}<br>
                                                     @endforeach
                                                 </td>
-                                                <td>{{ $item->created_at }}</td>
+                                                <td>{{ date("d-m-Y H:i:s", strtotime($item->created_at)) }}</td>
                                                 <td>
                                                     @if( empty($item->start_date) && empty($item->end_date))
                                                         Бессрочно
@@ -134,9 +128,6 @@
                                     <table class="table">
                                         <thead>
                                         <tr>
-                                            @if(\Auth::user()->is_admin == 1)
-                                                <th>#</th>
-                                            @endif
                                             <th>Название</th>
                                             <th>Приоритет</th>
                                             <th>Статус</th>
@@ -152,9 +143,6 @@
                                             @foreach($tasks as $item)
                                             @if($status_type == $item->task->status)
                                             <tr>
-                                                @if(\Auth::user()->is_admin == 1)
-                                                    <td>{{ $item->task->id }}</td>
-                                                @endif
                                                 <td>{{ $item->task->name }}</td>
                                                 <td>{{ $item->task->priority }}</td>
                                                 <td>{{ $item->task->getStatus->name }}</td>
@@ -166,7 +154,7 @@
                                                         {{ $user['name'] }}<br>
                                                     @endforeach
                                                 </td>
-                                                <td>{{ $item->task->created_at }}</td>
+                                                <td>{{ date("d-m-Y H:i:s", strtotime($item->created_at)) }}</td>
                                                 <td>
                                                     @if(user_can('view_task'))
                                                         <a href="{{ url('/admin/tasks/' . $item->task->id) }}" title="Просмотр"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Просмотр</button></a>

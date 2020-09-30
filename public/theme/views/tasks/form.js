@@ -14,6 +14,7 @@ $(function () {
 
     $("#start_date, #end_date").datepicker({
         firstDay: 1,
+        dateFormat: 'dd/mm/yy',
         closeText: "Закрыть",
         prevText: "&#x3C;",
         nextText: "&#x3E;",

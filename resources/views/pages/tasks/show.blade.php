@@ -163,8 +163,8 @@
                                     <tr>
                                         <th>Тип</th><td> {{ $task->type->name }}</td>
                                     </tr>
-                                    <tr><th>Начало задания</th> <td>{{ $task->start_date }}</td></tr>
-                                    <tr><th>Конец задания</th> <td>{{ $task->end_date }}</td></tr>
+                                    <tr><th>Начало задания</th> <td>{{ getNormalizeDate($task->start_date) }}</td></tr>
+                                    <tr><th>Конец задания</th> <td>{{ getNormalizeDate($task->end_date) }}</td></tr>
                                     <tr>
                                         <th>Описание</th> <td>{!! $task->description !!}</td>
                                     </tr>
@@ -178,8 +178,8 @@
                                         <p>{{ $user }}</p>
                                     @endforeach</td>
                                     </tr>
-                                    <tr><th> Дата создания </th><td>{{ $task->created_at }}</td></tr>
-                                    <tr><th> Дата изменения </th><td>{{ $task->updated_at }}</td></tr>
+                                    <tr><th> Дата создания </th><td>{{ date("d-m-Y H:i:s", strtotime($task->created_at) ) }}</td></tr>
+                                    <tr><th> Дата изменения </th><td>{{ date("d-m-Y H:i:s", strtotime($task->updated_at) ) }}</td></tr>
                                     @if($task->documents->count() > 0)
                                         <tr>
                                             <th>Документы </th> 
